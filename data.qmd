@@ -1,5 +1,96 @@
 # Data
+```{r}
+# open the file
+sld2021 <- read.csv("EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv", colClasses = c(GEOID = "character"))
+
+columns <- colnames(sld2021)
+
+print(columns)
+```
+
+```{r}
+
+#select features
+selected_columns <- c("GEOID", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE", 
+                      "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+                      "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+                      "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+                      "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+                      "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+                      "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI")
+
+new_sld2021 <- sld2021[, selected_columns]
+new_sld2021
+```
+
+```{r}
+#Select data for manhatten
+NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
+
+# Display the filtered DataFrame
+NY_data
+
+man_data <- NY_data[NY_data$COUNTYFP == 61, ]
+man_data
+```
 
 ## Description
+```{r,fig.height=35, fig.width=20}
+library(ggplot2)
+library(gridExtra)
+
+# Define the columns to plot
+columns_to_plot <- c(
+  "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+  "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+  "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+  "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+  "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+  "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI"
+)
+
+# Create a list to hold the ggplot objects
+plots <- list()
+
+# Generate density plots for each column
+for (column in columns_to_plot) {
+  p <- ggplot(man_data, aes_string(x = column)) +
+    geom_density(fill = "blue", alpha = 0.4) +
+    labs(title = paste("Density plot of", column, "preprocessed"),
+         x = column, y = "Density") +
+    theme_minimal()
+  plots[[column]] <- p
+}
+
+# Arrange the plots in a grid (7 rows, 5 columns)
+grid_layout <- do.call(grid.arrange, c(plots, nrow = 7, ncol = 5))
+
+
+```
 
 ## Missing value analysis
+```{r}
+#no missing value
+sum(is.na(man_data))
+colSums(is.na(man_data))
+```
+
+```{r}
+#rescale the data
+# Load required library
+library(scales)
+
+# Define the columns to scale
+columns_to_scale <- c("P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+                      "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+                      "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+                      "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+                      "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+                      "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI")
+
+# Apply Min-Max scaling to the selected columns
+man_data[columns_to_scale] <- lapply(man_data[columns_to_scale], rescale)
+
+# Print the scaled data
+print(man_data)
+```
