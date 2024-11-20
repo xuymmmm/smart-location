@@ -9,6 +9,9 @@ EPA first released a beta version of the Smart Location Database in 2011. The in
 The format of the data is geometry data based on census block groups. We plan to select the features that can best describe our research question, and select the data falls into Manhatten area in New York city. We plan to plot the density distribution of the data to examine the usability of the features for future use.
 
 ### Data dimension
+
+
+
 ```{r}
 # open the file
 library(readr)
@@ -25,6 +28,9 @@ columns <- colnames(sld2021)
 
 
 ```
+
+
+
 
 ### Feature selection
 Demographics
@@ -71,6 +77,9 @@ D5be,  Working age population within 45-minute transit commute, time decay (walk
 D5cr, Proportional Accessibility to Regional Destinations - Auto: Employment accessibility expressed as a ratio of total CBSA accessibility
 D5cri, Regional Centrality Index – Auto: CBG [D5cr] score relative to max CBSA [D5cr] score 
 
+
+
+
 ```{r}
 
 #select features
@@ -85,7 +94,13 @@ selected_columns <- c("GEOID20", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE",
 new_sld2021 <- sld2021[, selected_columns]
 
 ```
+
+
+
 ### Area selection
+
+
+
 ```{r}
 #Select data for manhatten
 NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
@@ -96,7 +111,13 @@ NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
 man_data <- NY_data[NY_data$COUNTYFP == 61, ]
 
 ```
+
+
+
 ### Density check
+
+
+
 ```{r,fig.height=35, fig.width=20}
 library(ggplot2)
 library(gridExtra)
@@ -130,7 +151,13 @@ grid_layout <- do.call(grid.arrange, c(plots, nrow = 7, ncol = 5))
 
 ```
 
+
+
+
 ## Missing value analysis
+
+
+
 ```{r}
 # Install and load DataExplorer
 #install.packages("DataExplorer")
@@ -140,7 +167,13 @@ library(DataExplorer)
 plot_missing(man_data)
 
 ```
+
+
+
 There is no missing value because all features are with 0 missing rows.
+
+
+
 
 ```{r}
 library(VIM) 
@@ -153,9 +186,15 @@ aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = TRUE,
      labels = names(man_data), cex.axis = 0.7, gap = 3, 
      main = "Missing Data Overview")
 ```
+
+
+
 There is no missing data because proportion of missings is 0. If the combination count is 1 in the output of the aggr() function, it means there is only one distinct pattern of missingness across all the variables in the dataset. In other words:Every row with missing values has missingness in the exact same set of variables.No other unique missing value patterns exist in the dataset.
 
 ### Data rescale 
+
+
+
 ```{r}
 #rescale the data
 # Load required library
