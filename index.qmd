@@ -2,15 +2,15 @@
 
 Understanding the efficiency of locations is becoming increasingly important in an era of rapid urbanization and growing interest in sustainable living. The Smart Location Database is a valuable resource for understanding the intricate relationships that exist between transportation systems, urban planning, and demographic trends. This national dataset gathers more than 90 characteristics and provide a comprehensive picture of location efficiency, including employment possibilities, transit service, neighborhood design, land use diversity, housing density, and even demographic trends. Additionally, it offers information at census block groups level, providing an enormous amount of data for scholars, decision-makers, and urban planners.
 
-In this study, we focus on Manhattan in New York State, a region known for its diverse landscapes, lively cities, and rich cultural heritage. From the busy streets of New York City to the quiet suburbs and rural areas upstate, Manhattan provides an intriguing perspective for analyzing location efficiency concepts.
+In this study, we focus on Manhattan, New York City because Manhattan offers an exceptional case for analyzing the complex factors influencing location efficiency and urban sustainability.
 
 Through this analysis, we want to answer these two questions:
 
-1. What role does land use diversity play in influencing the efficiency of suburban and rural areas in Manhattan in New York State?
+1. What role does land use diversity play in influencing the efficiency of urban areas in Manhattan?
 
-2. Can we identify trends or differences in location efficiency that could lead to recommendations for urban planning or transportation infrastructure improvements?
+2. Can we identify trends in employment possibilities, transit service, land use diversity, and housing density in Manhattan and provide recommendations for urban planning or transportation infrastructure improvements?
 
 
-By focusing on New York State, we hope to give useful insights that could guide more intelligent development plans, advance equity, and raise the standard of living for citizens all throughout the state. Join us as we investigate New York's story from the Smart Location Database!
+By focusing on Manhattan, we intend to provide insightful information that can promote equitable growth, improve the quality of life for its citizens, and improve equity. Join us as we investigate Manhattan's story from the Smart Location Database!
 
 
