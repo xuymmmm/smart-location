@@ -1,17 +1,36 @@
 # Data
+
+## Technical Description
+
+The SLD dataset (url: https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv) was gathered by EPA (United States Environmental Protection Agency), which summarizes more than 90 different indicators associated with the built environment and location efficiency.Most attributes are available for all U.S. block groups.
+
+EPA first released a beta version of the Smart Location Database in 2011. The initial full version was released in 2013, and the database was updated to its current version in 2021.
+
+The format of the data is geometry data based on census block groups. We plan to select the features that can best describe our research question, and select the data falls into Manhatten area in New York city. We plan to plot the density distribution of the data to examine the usability of the features for future use.
+
+### Data dimension
 ```{r}
 # open the file
-sld2021 <- read.csv("EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv", colClasses = c(GEOID = "character"))
+library(readr)
+
+url <- "https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv"
+
+# read CSV 
+sld2021 <- read_csv(url)
+
+
+#sld2021 <- read.csv("EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv", colClasses = #c(GEOID = "character"))
 
 columns <- colnames(sld2021)
 
 print(columns)
 ```
 
+### Feature selection
 ```{r}
 
 #select features
-selected_columns <- c("GEOID", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE", 
+selected_columns <- c("GEOID20", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE", 
                       "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
                       "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
                       "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
@@ -22,7 +41,7 @@ selected_columns <- c("GEOID", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE",
 new_sld2021 <- sld2021[, selected_columns]
 new_sld2021
 ```
-
+### Area selection
 ```{r}
 #Select data for manhatten
 NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
@@ -33,8 +52,7 @@ NY_data
 man_data <- NY_data[NY_data$COUNTYFP == 61, ]
 man_data
 ```
-
-## Description
+### Density check
 ```{r,fig.height=35, fig.width=20}
 library(ggplot2)
 library(gridExtra)
@@ -70,11 +88,30 @@ grid_layout <- do.call(grid.arrange, c(plots, nrow = 7, ncol = 5))
 
 ## Missing value analysis
 ```{r}
+# Install and load DataExplorer
+#install.packages("DataExplorer")
+library(DataExplorer)
+
+# Visualize missing data
+plot_missing(man_data)
+
+```
+There is no missing value because all features are with 0 missing rows.
+
+```{r}
+library(VIM) 
+
 #no missing value
 sum(is.na(man_data))
 colSums(is.na(man_data))
-```
 
+aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = TRUE, 
+     labels = names(man_data), cex.axis = 0.7, gap = 3, 
+     main = "Missing Data Overview")
+```
+There is no missing data because proportion of missings is 0. If the combination count is 1 in the output of the aggr() function, it means there is only one distinct pattern of missingness across all the variables in the dataset. In other words:Every row with missing values has missingness in the exact same set of variables.No other unique missing value patterns exist in the dataset.
+
+### Data rescale 
 ```{r}
 #rescale the data
 # Load required library
