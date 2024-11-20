@@ -1,1 +1,16 @@
 # Introduction
+
+Understanding the efficiency of locations is becoming increasingly important in an era of rapid urbanization and growing interest in sustainable living. The Smart Location Database is a valuable resource for understanding the intricate relationships that exist between transportation systems, urban planning, and demographic trends. This national dataset gathers more than 90 characteristics and provide a comprehensive picture of location efficiency, including employment possibilities, transit service, neighborhood design, land use diversity, housing density, and even demographic trends. Additionally, it offers information at census block groups level, providing an enormous amount of data for scholars, decision-makers, and urban planners.
+
+In this study, we focus on Manhattan in New York State, a region known for its diverse landscapes, lively cities, and rich cultural heritage. From the busy streets of New York City to the quiet suburbs and rural areas upstate, Manhattan provides an intriguing perspective for analyzing location efficiency concepts.
+
+Through this analysis, we want to answer these two questions:
+
+1. What role does land use diversity play in influencing the efficiency of suburban and rural areas in Manhattan in New York State?
+
+2. Can we identify trends or differences in location efficiency that could lead to recommendations for urban planning or transportation infrastructure improvements?
+
+
+By focusing on New York State, we hope to give useful insights that could guide more intelligent development plans, advance equity, and raise the standard of living for citizens all throughout the state. Join us as we investigate New York's story from the Smart Location Database!
+
+
