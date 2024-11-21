@@ -33,6 +33,7 @@ sld2021 <- read_csv(url)
 ### Feature selection
 We choose 32 features out of 90 to best describe the research question, all the features are from five prospects:demographics, density, design, transit access, destination accessibility.
 
+For example:
 Demographics
 ‘P_WrkAge’, Percent of population that is working aged 18 to 64 years, 
 Pct_AO1 ,Percent of one-car households in CBG, 2018 
@@ -41,41 +42,7 @@ R_HiWageWk, Count of workers earning $3333/month or more (home location), 2017
 E_HiWageWk, # of workers earning $3333/month or more (work location), 2017
 
 
-Density
-D1a, Gross residential density (HU/acre) on unprotected land 
-D1b, Gross population density (people/acre) on unprotected land
-D1c, Gross employment density (jobs/acre) on unprotected land 
-D1c8_Hlth , Gross health care (8-tier) employment density (jobs/acre) on unprotected land
-D1d , Gross activity density (employment + HUs) on unprotected land 
-D2a_JpHH, Jobs per household 
-D2a_EpHHm,  Employment and household entropy 
-D2c_TripEq, Trip productions and trip attractions equilibrium index; the closer to one, the more balanced the trip making
-D2r_JobPop, Regional Diversity. Standard calculation based on population and total employment: Deviation of CBG ratio of jobs/pop from the regional average ratio of jobs/pop 
-D2c_WrEmIx, Household Workers per Job Equilibrium Index; the closer to one the more balanced the resident workers and jobs in the CBG. 
 
-Design
-D3a, Total road network density 
-D3aao, Network density in terms of facility miles of auto-oriented links per square mile
-D3amm, Network density in terms of facility miles of multi-modal links per square mile 
-D3apo, Network density in terms of facility miles of pedestrian- oriented links per square mile
-
-D3b ,Street intersection density (weighted, auto-oriented intersections eliminated) 
-D3bao ,Intersection density in terms of auto-oriented intersections per square mile
-D3bmm4, Intersection density in terms of multi-modal intersections having four or more legs per square mile
-D3bpo4, Intersection density in terms of pedestrian-oriented intersections having four or more legs per square mile 
-
-Transit Access 
-D4a, Distance from the population-weighted centroid to nearest transit stop (meters) ,2020
-D4c, Aggregate frequency of transit service within 0.25 miles of CBG boundary per hour during evening peak period, 2020
-D4d, Aggregate frequency of transit service [D4c] per square mile 
-
-Destination Accessibility 
-D5ar, Jobs within 45 minutes auto travel time, time- decay (network travel time) weighted, 2020
-D5ae, Working age population within 45 minutes auto travel time, time-decay (network travel time) weighted 
-D5br , Jobs within 45-minute transit commute, distance decay (walk network travel time, GTFS schedules) weighted 
-D5be,  Working age population within 45-minute transit commute, time decay (walk network travel time, GTFS schedules) weighted 
-D5cr, Proportional Accessibility to Regional Destinations - Auto: Employment accessibility expressed as a ratio of total CBSA accessibility
-D5cri, Regional Centrality Index – Auto: CBG [D5cr] score relative to max CBSA [D5cr] score 
 
 ```{r}
 
@@ -134,7 +101,7 @@ We also use heatmap for missing value by packages("naniar"), from the observatio
 
 
 
-aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = TRUE, 
+aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = FALSE, 
      labels = names(man_data), cex.axis = 0.7, gap = 3, 
      main = "Missing Data Overview")
 ```
