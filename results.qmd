@@ -1,1 +1,53 @@
 # Results
+## Density check
+```{r,fig.height=35, fig.width=20}
+library(readr)
+library(ggplot2)
+library(gridExtra)
+url <- "https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv"
+
+
+sld2021 <- read_csv(url)
+
+selected_columns <- c("GEOID20", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE", 
+                      "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+                      "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+                      "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+                      "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+                      "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+                      "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI")
+
+new_sld2021 <- sld2021[, selected_columns]
+NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
+
+man_data <- NY_data[NY_data$COUNTYFP == 61, ]
+
+# Define the columns to plot
+columns_to_plot <- c(
+  "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+  "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+  "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+  "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+  "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+  "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI"
+)
+
+# Create a list to hold the ggplot objects
+plots <- list()
+
+# Generate density plots for each column
+for (column in columns_to_plot) {
+  p <- ggplot(man_data, aes_string(x = column)) +
+    geom_density(fill = "blue", alpha = 0.4) +
+    labs(title = paste("Density plot of", column, "preprocessed"),
+         x = column, y = "Density") +
+    theme_minimal()
+  plots[[column]] <- p
+}
+
+# Arrange the plots in a grid (7 rows, 5 columns)
+grid_layout <- do.call(grid.arrange, c(plots, nrow = 7, ncol = 5))
+
+
+```
+The density plot reveals that some features are highly imbalanced, with most of their values concentrated at 0. These features will be excluded in future research to ensure a more balanced and meaningful analysis: E_HiWageWk, D1C, D1c8_Hlth, D1D, D2A_JPHH, D3AAO, D3B, D3BAO, D3BMM4, D3BPO4

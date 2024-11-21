@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Data – Smart Location</title>
+<title>2&nbsp; Data – Exploratory Data Analysis of  transportation efficiency data in Manhattan</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -130,7 +130,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Smart Location</a> 
+      <a href="./">Exploratory Data Analysis of transportation efficiency data in Manhattan</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/xuymmmm/smart-location" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
@@ -188,12 +188,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#data-dimension" id="toc-data-dimension" class="nav-link" data-scroll-target="#data-dimension"><span class="header-section-number">2.1.1</span> Data dimension</a></li>
   <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">2.1.2</span> Feature selection</a></li>
   <li><a href="#area-selection" id="toc-area-selection" class="nav-link" data-scroll-target="#area-selection"><span class="header-section-number">2.1.3</span> Area selection</a></li>
-  <li><a href="#density-check" id="toc-density-check" class="nav-link" data-scroll-target="#density-check"><span class="header-section-number">2.1.4</span> Density check</a></li>
   </ul></li>
-  <li><a href="#missing-value-analysis" id="toc-missing-value-analysis" class="nav-link" data-scroll-target="#missing-value-analysis"><span class="header-section-number">2.2</span> Missing value analysis</a>
-  <ul class="collapse">
-  <li><a href="#data-rescale" id="toc-data-rescale" class="nav-link" data-scroll-target="#data-rescale"><span class="header-section-number">2.2.1</span> Data rescale</a></li>
-  </ul></li>
+  <li><a href="#missing-value-analysis" id="toc-missing-value-analysis" class="nav-link" data-scroll-target="#missing-value-analysis"><span class="header-section-number">2.2</span> Missing value analysis</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/xuymmmm/smart-location/edit/main/data.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/xuymmmm/smart-location/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -226,242 +222,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The format of the data is geometry data based on census block groups. We plan to select the features that can best describe our research question, and select the data falls into Manhatten area in New York city. We plan to plot the density distribution of the data to examine the usability of the features for future use.</p>
 <section id="data-dimension" class="level3" data-number="2.1.1">
 <h3 data-number="2.1.1" class="anchored" data-anchor-id="data-dimension"><span class="header-section-number">2.1.1</span> Data dimension</h3>
+<p>The original SLD dataset dimension is Rows: 220740 Columns: 117, each row stands for each census block group unit. The columns include 90 indicators and other geometry IDs.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># open the file</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># read CSV </span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sld2021 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 220740 Columns: 117
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr   (2): CSA_Name, CBSA_Name
-dbl (115): OBJECTID, GEOID10, GEOID20, STATEFP, COUNTYFP, TRACTCE, BLKGRPCE,...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#sld2021 &lt;- read.csv("EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv", colClasses = #c(GEOID = "character"))</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>columns <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sld2021)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>  [1] "OBJECTID"     "GEOID10"      "GEOID20"      "STATEFP"      "COUNTYFP"    
-  [6] "TRACTCE"      "BLKGRPCE"     "CSA"          "CSA_Name"     "CBSA"        
- [11] "CBSA_Name"    "CBSA_POP"     "CBSA_EMP"     "CBSA_WRK"     "Ac_Total"    
- [16] "Ac_Water"     "Ac_Land"      "Ac_Unpr"      "TotPop"       "CountHU"     
- [21] "HH"           "P_WrkAge"     "AutoOwn0"     "Pct_AO0"      "AutoOwn1"    
- [26] "Pct_AO1"      "AutoOwn2p"    "Pct_AO2p"     "Workers"      "R_LowWageWk" 
- [31] "R_MedWageWk"  "R_HiWageWk"   "R_PCTLOWWAGE" "TotEmp"       "E5_Ret"      
- [36] "E5_Off"       "E5_Ind"       "E5_Svc"       "E5_Ent"       "E8_Ret"      
- [41] "E8_off"       "E8_Ind"       "E8_Svc"       "E8_Ent"       "E8_Ed"       
- [46] "E8_Hlth"      "E8_Pub"       "E_LowWageWk"  "E_MedWageWk"  "E_HiWageWk"  
- [51] "E_PctLowWage" "D1A"          "D1B"          "D1C"          "D1C5_RET"    
- [56] "D1C5_OFF"     "D1C5_IND"     "D1C5_SVC"     "D1C5_ENT"     "D1C8_RET"    
- [61] "D1C8_OFF"     "D1C8_IND"     "D1C8_SVC"     "D1C8_ENT"     "D1C8_ED"     
- [66] "D1C8_HLTH"    "D1C8_PUB"     "D1D"          "D1_FLAG"      "D2A_JPHH"    
- [71] "D2B_E5MIX"    "D2B_E5MIXA"   "D2B_E8MIX"    "D2B_E8MIXA"   "D2A_EPHHM"   
- [76] "D2C_TRPMX1"   "D2C_TRPMX2"   "D2C_TRIPEQ"   "D2R_JOBPOP"   "D2R_WRKEMP"  
- [81] "D2A_WRKEMP"   "D2C_WREMLX"   "D3A"          "D3AAO"        "D3AMM"       
- [86] "D3APO"        "D3B"          "D3BAO"        "D3BMM3"       "D3BMM4"      
- [91] "D3BPO3"       "D3BPO4"       "D4A"          "D4B025"       "D4B050"      
- [96] "D4C"          "D4D"          "D4E"          "D5AR"         "D5AE"        
-[101] "D5BR"         "D5BE"         "D5CR"         "D5CRI"        "D5CE"        
-[106] "D5CEI"        "D5DR"         "D5DRI"        "D5DE"         "D5DEI"       
-[111] "D2A_Ranked"   "D2B_Ranked"   "D3B_Ranked"   "D4A_Ranked"   "NatWalkInd"  
-[116] "Shape_Length" "Shape_Area"  </code></pre>
-</div>
-</div>
-</section>
-<section id="feature-selection" class="level3" data-number="2.1.2">
-<h3 data-number="2.1.2" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">2.1.2</span> Feature selection</h3>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#select features</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>selected_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GEOID20"</span>, <span class="st">"STATEFP"</span>, <span class="st">"COUNTYFP"</span>, <span class="st">"TRACTCE"</span>, <span class="st">"BLKGRPCE"</span>, </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"P_WrkAge"</span>, <span class="st">"Pct_AO1"</span>, <span class="st">"Pct_AO2p"</span>, <span class="st">"R_HiWageWk"</span>, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"E_HiWageWk"</span>, <span class="st">"D1A"</span>, <span class="st">"D1B"</span>, <span class="st">"D1C"</span>, <span class="st">"D1C8_HLTH"</span>, <span class="st">"D1D"</span>, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2A_JPHH"</span>, <span class="st">"D2A_EPHHM"</span>, <span class="st">"D2C_TRIPEQ"</span>, <span class="st">"D2R_JOBPOP"</span>, </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2C_WREMLX"</span>, <span class="st">"D3A"</span>, <span class="st">"D3AAO"</span>, <span class="st">"D3AMM"</span>, <span class="st">"D3APO"</span>, <span class="st">"D3B"</span>, </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D3BAO"</span>, <span class="st">"D3BMM4"</span>, <span class="st">"D3BPO4"</span>, <span class="st">"D4A"</span>, <span class="st">"D4C"</span>, <span class="st">"D4D"</span>, </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D5AR"</span>, <span class="st">"D5AE"</span>, <span class="st">"D5BR"</span>, <span class="st">"D5BE"</span>, <span class="st">"D5CR"</span>, <span class="st">"D5CRI"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>new_sld2021 <span class="ot">&lt;-</span> sld2021[, selected_columns]</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>new_sld2021</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 220,740 × 37
-        GEOID20 STATEFP COUNTYFP TRACTCE BLKGRPCE P_WrkAge Pct_AO1 Pct_AO2p
-          &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
- 1 481130000000      48      113    7825        4    0.549  0.0922    0.745
- 2 481130000000      48      113    7825        2    0.466  0.411     0.589
- 3 481130000000      48      113    7825        3    0.811  0.435     0.508
- 4 481130000000      48      113    7824        1    0.638  0.112     0.888
- 5 481130000000      48      113    7824        2    0.506  0.195     0.790
- 6 481130000000      48      113    7827        1    0.588  0.706     0.227
- 7 481130000000      48      113    9301        2    0.644  0.0543    0.916
- 8 481130000000      48      113    1102        2    0.69   0.302     0.553
- 9 481130000000      48      113   11401        2    0.515  0.349     0.568
-10 481130000000      48      113   11401        3    0.578  0.545     0.143
-# ℹ 220,730 more rows
-# ℹ 29 more variables: R_HiWageWk &lt;dbl&gt;, E_HiWageWk &lt;dbl&gt;, D1A &lt;dbl&gt;,
-#   D1B &lt;dbl&gt;, D1C &lt;dbl&gt;, D1C8_HLTH &lt;dbl&gt;, D1D &lt;dbl&gt;, D2A_JPHH &lt;dbl&gt;,
-#   D2A_EPHHM &lt;dbl&gt;, D2C_TRIPEQ &lt;dbl&gt;, D2R_JOBPOP &lt;dbl&gt;, D2C_WREMLX &lt;dbl&gt;,
-#   D3A &lt;dbl&gt;, D3AAO &lt;dbl&gt;, D3AMM &lt;dbl&gt;, D3APO &lt;dbl&gt;, D3B &lt;dbl&gt;, D3BAO &lt;dbl&gt;,
-#   D3BMM4 &lt;dbl&gt;, D3BPO4 &lt;dbl&gt;, D4A &lt;dbl&gt;, D4C &lt;dbl&gt;, D4D &lt;dbl&gt;, D5AR &lt;dbl&gt;,
-#   D5AE &lt;dbl&gt;, D5BR &lt;dbl&gt;, D5BE &lt;dbl&gt;, D5CR &lt;dbl&gt;, D5CRI &lt;dbl&gt;</code></pre>
-</div>
-</div>
-</section>
-<section id="area-selection" class="level3" data-number="2.1.3">
-<h3 data-number="2.1.3" class="anchored" data-anchor-id="area-selection"><span class="header-section-number">2.1.3</span> Area selection</h3>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Select data for manhatten</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>NY_data <span class="ot">&lt;-</span> new_sld2021[new_sld2021<span class="sc">$</span>STATEFP <span class="sc">==</span> <span class="dv">36</span>, ]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the filtered DataFrame</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>NY_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 15,463 × 37
-        GEOID20 STATEFP COUNTYFP TRACTCE BLKGRPCE P_WrkAge Pct_AO1 Pct_AO2p
-          &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
- 1 360150000000      36       15   10200        1    0.623   0.110   0.890 
- 2 360630000000      36       63   24303        2    0.603   0.259   0.699 
- 3 360070000000      36        7   14301        2    0.666   0.361   0.519 
- 4 360810000000      36       81   25900        2    0.581   0.383   0.0494
- 5 360810000000      36       81   16600        2    0.81    0.454   0.277 
- 6 360811000000      36       81  122702        1    0.47    0.134   0.0312
- 7 360810000000      36       81   28300        5    0.753   0.425   0.0381
- 8 360811000000      36       81  148300        4    0.528   0.374   0.590 
- 9 360811000000      36       81   53900        1    0.754   0.378   0.203 
-10 360810000000      36       81   35300        2    0.584   0.381   0.0613
-# ℹ 15,453 more rows
-# ℹ 29 more variables: R_HiWageWk &lt;dbl&gt;, E_HiWageWk &lt;dbl&gt;, D1A &lt;dbl&gt;,
-#   D1B &lt;dbl&gt;, D1C &lt;dbl&gt;, D1C8_HLTH &lt;dbl&gt;, D1D &lt;dbl&gt;, D2A_JPHH &lt;dbl&gt;,
-#   D2A_EPHHM &lt;dbl&gt;, D2C_TRIPEQ &lt;dbl&gt;, D2R_JOBPOP &lt;dbl&gt;, D2C_WREMLX &lt;dbl&gt;,
-#   D3A &lt;dbl&gt;, D3AAO &lt;dbl&gt;, D3AMM &lt;dbl&gt;, D3APO &lt;dbl&gt;, D3B &lt;dbl&gt;, D3BAO &lt;dbl&gt;,
-#   D3BMM4 &lt;dbl&gt;, D3BPO4 &lt;dbl&gt;, D4A &lt;dbl&gt;, D4C &lt;dbl&gt;, D4D &lt;dbl&gt;, D5AR &lt;dbl&gt;,
-#   D5AE &lt;dbl&gt;, D5BR &lt;dbl&gt;, D5BE &lt;dbl&gt;, D5CR &lt;dbl&gt;, D5CRI &lt;dbl&gt;</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>man_data <span class="ot">&lt;-</span> NY_data[NY_data<span class="sc">$</span>COUNTYFP <span class="sc">==</span> <span class="dv">61</span>, ]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>man_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1,170 × 37
-        GEOID20 STATEFP COUNTYFP TRACTCE BLKGRPCE P_WrkAge Pct_AO1 Pct_AO2p
-          &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
- 1 360610000000      36       61    7800        1    0.894  0.0353   0     
- 2 360610000000      36       61    5000        4    0.598  0.301    0.0357
- 3 360610000000      36       61    4400        7    0.694  0.169    0.0285
- 4 360610000000      36       61    6300        4    0.784  0.205    0     
- 5 360610000000      36       61    6400        5    0.76   0.0852   0.159 
- 6 360610000000      36       61    4800        2    0.685  0.308    0.0337
- 7 360610000000      36       61    5400        3    0.683  0.240    0.0264
- 8 360610000000      36       61    5900        4    0.66   0.531    0.0786
- 9 360610000000      36       61    6100        2    0.668  0.226    0.0725
-10 360610000000      36       61    6600        4    0.896  0.326    0.132 
-# ℹ 1,160 more rows
-# ℹ 29 more variables: R_HiWageWk &lt;dbl&gt;, E_HiWageWk &lt;dbl&gt;, D1A &lt;dbl&gt;,
-#   D1B &lt;dbl&gt;, D1C &lt;dbl&gt;, D1C8_HLTH &lt;dbl&gt;, D1D &lt;dbl&gt;, D2A_JPHH &lt;dbl&gt;,
-#   D2A_EPHHM &lt;dbl&gt;, D2C_TRIPEQ &lt;dbl&gt;, D2R_JOBPOP &lt;dbl&gt;, D2C_WREMLX &lt;dbl&gt;,
-#   D3A &lt;dbl&gt;, D3AAO &lt;dbl&gt;, D3AMM &lt;dbl&gt;, D3APO &lt;dbl&gt;, D3B &lt;dbl&gt;, D3BAO &lt;dbl&gt;,
-#   D3BMM4 &lt;dbl&gt;, D3BPO4 &lt;dbl&gt;, D4A &lt;dbl&gt;, D4C &lt;dbl&gt;, D4D &lt;dbl&gt;, D5AR &lt;dbl&gt;,
-#   D5AE &lt;dbl&gt;, D5BR &lt;dbl&gt;, D5BE &lt;dbl&gt;, D5CR &lt;dbl&gt;, D5CRI &lt;dbl&gt;</code></pre>
-</div>
-</div>
-</section>
-<section id="density-check" class="level3" data-number="2.1.4">
-<h3 data-number="2.1.4" class="anchored" data-anchor-id="density-check"><span class="header-section-number">2.1.4</span> Density check</h3>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the columns to plot</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>columns_to_plot <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"P_WrkAge"</span>, <span class="st">"Pct_AO1"</span>, <span class="st">"Pct_AO2p"</span>, <span class="st">"R_HiWageWk"</span>, </span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"E_HiWageWk"</span>, <span class="st">"D1A"</span>, <span class="st">"D1B"</span>, <span class="st">"D1C"</span>, <span class="st">"D1C8_HLTH"</span>, <span class="st">"D1D"</span>, </span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"D2A_JPHH"</span>, <span class="st">"D2A_EPHHM"</span>, <span class="st">"D2C_TRIPEQ"</span>, <span class="st">"D2R_JOBPOP"</span>, </span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"D2C_WREMLX"</span>, <span class="st">"D3A"</span>, <span class="st">"D3AAO"</span>, <span class="st">"D3AMM"</span>, <span class="st">"D3APO"</span>, <span class="st">"D3B"</span>, </span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"D3BAO"</span>, <span class="st">"D3BMM4"</span>, <span class="st">"D3BPO4"</span>, <span class="st">"D4A"</span>, <span class="st">"D4C"</span>, <span class="st">"D4D"</span>, </span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"D5AR"</span>, <span class="st">"D5AE"</span>, <span class="st">"D5BR"</span>, <span class="st">"D5BE"</span>, <span class="st">"D5CR"</span>, <span class="st">"D5CRI"</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a list to hold the ggplot objects</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate density plots for each column</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (column <span class="cf">in</span> columns_to_plot) {</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(man_data, <span class="fu">aes_string</span>(<span class="at">x =</span> column)) <span class="sc">+</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Density plot of"</span>, column, <span class="st">"preprocessed"</span>),</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> column, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  plots[[column]] <span class="ot">&lt;-</span> p</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
-ℹ Please use tidy evaluation idioms with `aes()`.
-ℹ See also `vignette("ggplot2-in-packages")` for more information.</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the plots in a grid (7 rows, 5 columns)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>grid_layout <span class="ot">&lt;-</span> <span class="fu">do.call</span>(grid.arrange, <span class="fu">c</span>(plots, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="1920"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="missing-value-analysis" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="missing-value-analysis"><span class="header-section-number">2.2</span> Missing value analysis</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install and load DataExplorer</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("DataExplorer")</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize missing data</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(man_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>There is no missing value because all features are with 0 missing rows.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(VIM) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(naniar)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(VIM) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: colorspace</code></pre>
@@ -486,35 +255,111 @@ Attaching package: 'VIM'</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#no missing value</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(man_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>sld2021 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 220740 Columns: 117</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr   (2): CSA_Name, CBSA_Name
+dbl (115): OBJECTID, GEOID10, GEOID20, STATEFP, COUNTYFP, TRACTCE, BLKGRPCE,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-selection" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">2.1.2</span> Feature selection</h3>
+<p>We choose 32 features out of 90 to best describe the research question, all the features are from five prospects:demographics, density, design, transit access, destination accessibility.</p>
+<p>Demographics ‘P_WrkAge’, Percent of population that is working aged 18 to 64 years, Pct_AO1 ,Percent of one-car households in CBG, 2018 Pct_AO2p ,Percent of two-plus-car households in CBG, 2018 R_HiWageWk, Count of workers earning $3333/month or more (home location), 2017 E_HiWageWk, # of workers earning $3333/month or more (work location), 2017</p>
+<p>Density D1a, Gross residential density (HU/acre) on unprotected land D1b, Gross population density (people/acre) on unprotected land D1c, Gross employment density (jobs/acre) on unprotected land D1c8_Hlth , Gross health care (8-tier) employment density (jobs/acre) on unprotected land D1d , Gross activity density (employment + HUs) on unprotected land D2a_JpHH, Jobs per household D2a_EpHHm, Employment and household entropy D2c_TripEq, Trip productions and trip attractions equilibrium index; the closer to one, the more balanced the trip making D2r_JobPop, Regional Diversity. Standard calculation based on population and total employment: Deviation of CBG ratio of jobs/pop from the regional average ratio of jobs/pop D2c_WrEmIx, Household Workers per Job Equilibrium Index; the closer to one the more balanced the resident workers and jobs in the CBG.</p>
+<p>Design D3a, Total road network density D3aao, Network density in terms of facility miles of auto-oriented links per square mile D3amm, Network density in terms of facility miles of multi-modal links per square mile D3apo, Network density in terms of facility miles of pedestrian- oriented links per square mile</p>
+<p>D3b ,Street intersection density (weighted, auto-oriented intersections eliminated) D3bao ,Intersection density in terms of auto-oriented intersections per square mile D3bmm4, Intersection density in terms of multi-modal intersections having four or more legs per square mile D3bpo4, Intersection density in terms of pedestrian-oriented intersections having four or more legs per square mile</p>
+<p>Transit Access D4a, Distance from the population-weighted centroid to nearest transit stop (meters) ,2020 D4c, Aggregate frequency of transit service within 0.25 miles of CBG boundary per hour during evening peak period, 2020 D4d, Aggregate frequency of transit service [D4c] per square mile</p>
+<p>Destination Accessibility D5ar, Jobs within 45 minutes auto travel time, time- decay (network travel time) weighted, 2020 D5ae, Working age population within 45 minutes auto travel time, time-decay (network travel time) weighted D5br , Jobs within 45-minute transit commute, distance decay (walk network travel time, GTFS schedules) weighted D5be, Working age population within 45-minute transit commute, time decay (walk network travel time, GTFS schedules) weighted D5cr, Proportional Accessibility to Regional Destinations - Auto: Employment accessibility expressed as a ratio of total CBSA accessibility D5cri, Regional Centrality Index – Auto: CBG [D5cr] score relative to max CBSA [D5cr] score</p>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(man_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>selected_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GEOID20"</span>, <span class="st">"STATEFP"</span>, <span class="st">"COUNTYFP"</span>, <span class="st">"TRACTCE"</span>, <span class="st">"BLKGRPCE"</span>, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"P_WrkAge"</span>, <span class="st">"Pct_AO1"</span>, <span class="st">"Pct_AO2p"</span>, <span class="st">"R_HiWageWk"</span>, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"E_HiWageWk"</span>, <span class="st">"D1A"</span>, <span class="st">"D1B"</span>, <span class="st">"D1C"</span>, <span class="st">"D1C8_HLTH"</span>, <span class="st">"D1D"</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2A_JPHH"</span>, <span class="st">"D2A_EPHHM"</span>, <span class="st">"D2C_TRIPEQ"</span>, <span class="st">"D2R_JOBPOP"</span>, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2C_WREMLX"</span>, <span class="st">"D3A"</span>, <span class="st">"D3AAO"</span>, <span class="st">"D3AMM"</span>, <span class="st">"D3APO"</span>, <span class="st">"D3B"</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D3BAO"</span>, <span class="st">"D3BMM4"</span>, <span class="st">"D3BPO4"</span>, <span class="st">"D4A"</span>, <span class="st">"D4C"</span>, <span class="st">"D4D"</span>, </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D5AR"</span>, <span class="st">"D5AE"</span>, <span class="st">"D5BR"</span>, <span class="st">"D5BE"</span>, <span class="st">"D5CR"</span>, <span class="st">"D5CRI"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>new_sld2021 <span class="ot">&lt;-</span> sld2021[, selected_columns]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>   GEOID20    STATEFP   COUNTYFP    TRACTCE   BLKGRPCE   P_WrkAge    Pct_AO1 
-         0          0          0          0          0          0          0 
-  Pct_AO2p R_HiWageWk E_HiWageWk        D1A        D1B        D1C  D1C8_HLTH 
-         0          0          0          0          0          0          0 
-       D1D   D2A_JPHH  D2A_EPHHM D2C_TRIPEQ D2R_JOBPOP D2C_WREMLX        D3A 
-         0          0          0          0          0          0          0 
-     D3AAO      D3AMM      D3APO        D3B      D3BAO     D3BMM4     D3BPO4 
-         0          0          0          0          0          0          0 
-       D4A        D4C        D4D       D5AR       D5AE       D5BR       D5BE 
-         0          0          0          0          0          0          0 
-      D5CR      D5CRI 
-         0          0 </code></pre>
 </div>
+</section>
+<section id="area-selection" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="area-selection"><span class="header-section-number">2.1.3</span> Area selection</h3>
+<p>We filtered the Manhatten data by selecting data with “STATEFP”==36, and “COUNTYFP”==61.The “STATEFP”==36 indicates the New York state, the “COUNTYFP”==61 is Manhatten area.</p>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggr</span>(man_data, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">'navyblue'</span>, <span class="st">'red'</span>), <span class="at">numbers =</span> <span class="cn">TRUE</span>, <span class="at">sortVars =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(man_data), <span class="at">cex.axis =</span> <span class="fl">0.7</span>, <span class="at">gap =</span> <span class="dv">3</span>, </span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Missing Data Overview"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>NY_data <span class="ot">&lt;-</span> new_sld2021[new_sld2021<span class="sc">$</span>STATEFP <span class="sc">==</span> <span class="dv">36</span>, ]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>man_data <span class="ot">&lt;-</span> NY_data[NY_data<span class="sc">$</span>COUNTYFP <span class="sc">==</span> <span class="dv">61</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="missing-value-analysis" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="missing-value-analysis"><span class="header-section-number">2.2</span> Missing value analysis</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>selected_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P_WrkAge"</span>, <span class="st">"Pct_AO1"</span>, <span class="st">"Pct_AO2p"</span>, <span class="st">"R_HiWageWk"</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"E_HiWageWk"</span>, <span class="st">"D1A"</span>, <span class="st">"D1B"</span>, <span class="st">"D1C"</span>, <span class="st">"D1C8_HLTH"</span>, <span class="st">"D1D"</span>, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2A_JPHH"</span>, <span class="st">"D2A_EPHHM"</span>, <span class="st">"D2C_TRIPEQ"</span>, <span class="st">"D2R_JOBPOP"</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2C_WREMLX"</span>, <span class="st">"D3A"</span>, <span class="st">"D3AAO"</span>, <span class="st">"D3AMM"</span>, <span class="st">"D3APO"</span>, <span class="st">"D3B"</span>, </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D3BAO"</span>, <span class="st">"D3BMM4"</span>, <span class="st">"D3BPO4"</span>, <span class="st">"D4A"</span>, <span class="st">"D4C"</span>, <span class="st">"D4D"</span>, </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D5AR"</span>, <span class="st">"D5AE"</span>, <span class="st">"D5BR"</span>, <span class="st">"D5BE"</span>, <span class="st">"D5CR"</span>, <span class="st">"D5CRI"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>man_miss<span class="ot">&lt;-</span> man_data[, selected_columns]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>missing_plot <span class="ot">&lt;-</span> <span class="fu">plot_missing</span>(man_miss,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">list</span>(<span class="at">Good =</span> <span class="fl">0.05</span>, <span class="at">OK =</span> <span class="fl">0.4</span>, <span class="at">Bad =</span> <span class="fl">0.8</span>, <span class="at">Remove =</span> <span class="dv">1</span>),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">group_color =</span> <span class="fu">list</span>(<span class="at">Good =</span> <span class="st">"#1B9E77"</span>, <span class="at">OK =</span> <span class="st">"#E6AB02"</span>, <span class="at">Bad =</span> <span class="st">"#D95F02"</span>, <span class="at">Remove =</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#E41A1C"</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">missing_only =</span> <span class="cn">FALSE</span>, <span class="at">title =</span> <span class="st">"Distribution of Missing Values for Each Variable"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There are no missing values in the dataset, as all features have 0 missing rows. In the plot_missing() function, when no missing values are present, the graph defaults to an x-axis scale ranging from -0.05 to 0.05. A similar case is demonstrated in the official reference: https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("naniar")</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(man_miss)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We also use heatmap for missing value by packages(“naniar”), from the observations, 100% present of data are exsited. 0% percent value is missing.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggr</span>(man_data, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">'navyblue'</span>, <span class="st">'red'</span>), <span class="at">numbers =</span> <span class="cn">TRUE</span>, <span class="at">sortVars =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(man_data), <span class="at">cex.axis =</span> <span class="fl">0.7</span>, <span class="at">gap =</span> <span class="dv">3</span>, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Missing Data Overview"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -567,66 +412,8 @@ Attaching package: 'VIM'</code></pre>
 </div>
 </div>
 <p>There is no missing data because proportion of missings is 0. If the combination count is 1 in the output of the aggr() function, it means there is only one distinct pattern of missingness across all the variables in the dataset. In other words:Every row with missing values has missingness in the exact same set of variables.No other unique missing value patterns exist in the dataset.</p>
-<section id="data-rescale" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="data-rescale"><span class="header-section-number">2.2.1</span> Data rescale</h3>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#rescale the data</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required library</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'scales'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:readr':
-
-    col_factor</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the columns to scale</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>columns_to_scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P_WrkAge"</span>, <span class="st">"Pct_AO1"</span>, <span class="st">"Pct_AO2p"</span>, <span class="st">"R_HiWageWk"</span>, </span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"E_HiWageWk"</span>, <span class="st">"D1A"</span>, <span class="st">"D1B"</span>, <span class="st">"D1C"</span>, <span class="st">"D1C8_HLTH"</span>, <span class="st">"D1D"</span>, </span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2A_JPHH"</span>, <span class="st">"D2A_EPHHM"</span>, <span class="st">"D2C_TRIPEQ"</span>, <span class="st">"D2R_JOBPOP"</span>, </span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D2C_WREMLX"</span>, <span class="st">"D3A"</span>, <span class="st">"D3AAO"</span>, <span class="st">"D3AMM"</span>, <span class="st">"D3APO"</span>, <span class="st">"D3B"</span>, </span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D3BAO"</span>, <span class="st">"D3BMM4"</span>, <span class="st">"D3BPO4"</span>, <span class="st">"D4A"</span>, <span class="st">"D4C"</span>, <span class="st">"D4D"</span>, </span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"D5AR"</span>, <span class="st">"D5AE"</span>, <span class="st">"D5BR"</span>, <span class="st">"D5BE"</span>, <span class="st">"D5CR"</span>, <span class="st">"D5CRI"</span>)</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply Min-Max scaling to the selected columns</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>man_data[columns_to_scale] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(man_data[columns_to_scale], rescale)</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the scaled data</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(man_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1,170 × 37
-        GEOID20 STATEFP COUNTYFP TRACTCE BLKGRPCE P_WrkAge Pct_AO1 Pct_AO2p
-          &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
- 1 360610000000      36       61    7800        1    0.894  0.0472   0     
- 2 360610000000      36       61    5000        4    0.598  0.402    0.0357
- 3 360610000000      36       61    4400        7    0.694  0.226    0.0285
- 4 360610000000      36       61    6300        4    0.784  0.274    0     
- 5 360610000000      36       61    6400        5    0.76   0.114    0.159 
- 6 360610000000      36       61    4800        2    0.685  0.412    0.0337
- 7 360610000000      36       61    5400        3    0.683  0.321    0.0264
- 8 360610000000      36       61    5900        4    0.66   0.710    0.0786
- 9 360610000000      36       61    6100        2    0.668  0.303    0.0725
-10 360610000000      36       61    6600        4    0.896  0.436    0.132 
-# ℹ 1,160 more rows
-# ℹ 29 more variables: R_HiWageWk &lt;dbl&gt;, E_HiWageWk &lt;dbl&gt;, D1A &lt;dbl&gt;,
-#   D1B &lt;dbl&gt;, D1C &lt;dbl&gt;, D1C8_HLTH &lt;dbl&gt;, D1D &lt;dbl&gt;, D2A_JPHH &lt;dbl&gt;,
-#   D2A_EPHHM &lt;dbl&gt;, D2C_TRIPEQ &lt;dbl&gt;, D2R_JOBPOP &lt;dbl&gt;, D2C_WREMLX &lt;dbl&gt;,
-#   D3A &lt;dbl&gt;, D3AAO &lt;dbl&gt;, D3AMM &lt;dbl&gt;, D3APO &lt;dbl&gt;, D3B &lt;dbl&gt;, D3BAO &lt;dbl&gt;,
-#   D3BMM4 &lt;dbl&gt;, D3BPO4 &lt;dbl&gt;, D4A &lt;dbl&gt;, D4C &lt;dbl&gt;, D4D &lt;dbl&gt;, D5AR &lt;dbl&gt;,
-#   D5AE &lt;dbl&gt;, D5BR &lt;dbl&gt;, D5BE &lt;dbl&gt;, D5CR &lt;dbl&gt;, D5CRI &lt;dbl&gt;</code></pre>
-</div>
-</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
