@@ -277,12 +277,7 @@ dbl (115): OBJECTID, GEOID10, GEOID20, STATEFP, COUNTYFP, TRACTCE, BLKGRPCE,...
 <section id="feature-selection" class="level3" data-number="2.1.2">
 <h3 data-number="2.1.2" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">2.1.2</span> Feature selection</h3>
 <p>We choose 32 features out of 90 to best describe the research question, all the features are from five prospects:demographics, density, design, transit access, destination accessibility.</p>
-<p>Demographics ‘P_WrkAge’, Percent of population that is working aged 18 to 64 years, Pct_AO1 ,Percent of one-car households in CBG, 2018 Pct_AO2p ,Percent of two-plus-car households in CBG, 2018 R_HiWageWk, Count of workers earning $3333/month or more (home location), 2017 E_HiWageWk, # of workers earning $3333/month or more (work location), 2017</p>
-<p>Density D1a, Gross residential density (HU/acre) on unprotected land D1b, Gross population density (people/acre) on unprotected land D1c, Gross employment density (jobs/acre) on unprotected land D1c8_Hlth , Gross health care (8-tier) employment density (jobs/acre) on unprotected land D1d , Gross activity density (employment + HUs) on unprotected land D2a_JpHH, Jobs per household D2a_EpHHm, Employment and household entropy D2c_TripEq, Trip productions and trip attractions equilibrium index; the closer to one, the more balanced the trip making D2r_JobPop, Regional Diversity. Standard calculation based on population and total employment: Deviation of CBG ratio of jobs/pop from the regional average ratio of jobs/pop D2c_WrEmIx, Household Workers per Job Equilibrium Index; the closer to one the more balanced the resident workers and jobs in the CBG.</p>
-<p>Design D3a, Total road network density D3aao, Network density in terms of facility miles of auto-oriented links per square mile D3amm, Network density in terms of facility miles of multi-modal links per square mile D3apo, Network density in terms of facility miles of pedestrian- oriented links per square mile</p>
-<p>D3b ,Street intersection density (weighted, auto-oriented intersections eliminated) D3bao ,Intersection density in terms of auto-oriented intersections per square mile D3bmm4, Intersection density in terms of multi-modal intersections having four or more legs per square mile D3bpo4, Intersection density in terms of pedestrian-oriented intersections having four or more legs per square mile</p>
-<p>Transit Access D4a, Distance from the population-weighted centroid to nearest transit stop (meters) ,2020 D4c, Aggregate frequency of transit service within 0.25 miles of CBG boundary per hour during evening peak period, 2020 D4d, Aggregate frequency of transit service [D4c] per square mile</p>
-<p>Destination Accessibility D5ar, Jobs within 45 minutes auto travel time, time- decay (network travel time) weighted, 2020 D5ae, Working age population within 45 minutes auto travel time, time-decay (network travel time) weighted D5br , Jobs within 45-minute transit commute, distance decay (walk network travel time, GTFS schedules) weighted D5be, Working age population within 45-minute transit commute, time decay (walk network travel time, GTFS schedules) weighted D5cr, Proportional Accessibility to Regional Destinations - Auto: Employment accessibility expressed as a ratio of total CBSA accessibility D5cri, Regional Centrality Index – Auto: CBG [D5cr] score relative to max CBSA [D5cr] score</p>
+<p>For example: Demographics ‘P_WrkAge’, Percent of population that is working aged 18 to 64 years, Pct_AO1 ,Percent of one-car households in CBG, 2018 Pct_AO2p ,Percent of two-plus-car households in CBG, 2018 R_HiWageWk, Count of workers earning $3333/month or more (home location), 2017 E_HiWageWk, # of workers earning $3333/month or more (work location), 2017</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -357,7 +352,7 @@ dbl (115): OBJECTID, GEOID10, GEOID20, STATEFP, COUNTYFP, TRACTCE, BLKGRPCE,...
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggr</span>(man_data, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">'navyblue'</span>, <span class="st">'red'</span>), <span class="at">numbers =</span> <span class="cn">TRUE</span>, <span class="at">sortVars =</span> <span class="cn">TRUE</span>, </span>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggr</span>(man_data, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">'navyblue'</span>, <span class="st">'red'</span>), <span class="at">numbers =</span> <span class="cn">TRUE</span>, <span class="at">sortVars =</span> <span class="cn">FALSE</span>, </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(man_data), <span class="at">cex.axis =</span> <span class="fl">0.7</span>, <span class="at">gap =</span> <span class="dv">3</span>, </span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Missing Data Overview"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -367,48 +362,6 @@ dbl (115): OBJECTID, GEOID10, GEOID20, STATEFP, COUNTYFP, TRACTCE, BLKGRPCE,...
 <p><img src="data_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- Variables sorted by number of missings: 
-   Variable Count
-    GEOID20     0
-    STATEFP     0
-   COUNTYFP     0
-    TRACTCE     0
-   BLKGRPCE     0
-   P_WrkAge     0
-    Pct_AO1     0
-   Pct_AO2p     0
- R_HiWageWk     0
- E_HiWageWk     0
-        D1A     0
-        D1B     0
-        D1C     0
-  D1C8_HLTH     0
-        D1D     0
-   D2A_JPHH     0
-  D2A_EPHHM     0
- D2C_TRIPEQ     0
- D2R_JOBPOP     0
- D2C_WREMLX     0
-        D3A     0
-      D3AAO     0
-      D3AMM     0
-      D3APO     0
-        D3B     0
-      D3BAO     0
-     D3BMM4     0
-     D3BPO4     0
-        D4A     0
-        D4C     0
-        D4D     0
-       D5AR     0
-       D5AE     0
-       D5BR     0
-       D5BE     0
-       D5CR     0
-      D5CRI     0</code></pre>
 </div>
 </div>
 <p>There is no missing data because proportion of missings is 0. If the combination count is 1 in the output of the aggr() function, it means there is only one distinct pattern of missingness across all the variables in the dataset. In other words:Every row with missing values has missingness in the exact same set of variables.No other unique missing value patterns exist in the dataset.</p>
