@@ -6,7 +6,7 @@ execute:
   echo: true
 
 book:
-  title: "Smart Location"
+  title: "Exploratory Data Analysis of  transportation efficiency data in Manhattan"
   author:
     - Yueming Xu (yx2930)
     - Ke Wang (kw3173)

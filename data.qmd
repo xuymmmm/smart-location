@@ -9,24 +9,30 @@ EPA first released a beta version of the Smart Location Database in 2011. The in
 The format of the data is geometry data based on census block groups. We plan to select the features that can best describe our research question, and select the data falls into Manhatten area in New York city. We plan to plot the density distribution of the data to examine the usability of the features for future use.
 
 ### Data dimension
+The original SLD dataset dimension is Rows: 220740 Columns: 117, each row stands for each census block group unit. The columns include 90 indicators and other geometry IDs.
+
 ```{r}
-# open the file
+
 library(readr)
+library(DataExplorer)
+library(ggplot2)
+library(naniar)
+library(VIM) 
 
 url <- "https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv"
 
-# read CSV 
+
 sld2021 <- read_csv(url)
 
 
-#sld2021 <- read.csv("EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv", colClasses = #c(GEOID = "character"))
 
-columns <- colnames(sld2021)
 
 
 ```
 
 ### Feature selection
+We choose 32 features out of 90 to best describe the research question, all the features are from five prospects:demographics, density, design, transit access, destination accessibility.
+
 Demographics
 ‘P_WrkAge’, Percent of population that is working aged 18 to 64 years, 
 Pct_AO1 ,Percent of one-car households in CBG, 2018 
@@ -73,7 +79,7 @@ D5cri, Regional Centrality Index – Auto: CBG [D5cr] score relative to max CBSA
 
 ```{r}
 
-#select features
+
 selected_columns <- c("GEOID20", "STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE", 
                       "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
                       "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
@@ -86,68 +92,47 @@ new_sld2021 <- sld2021[, selected_columns]
 
 ```
 ### Area selection
+We filtered the Manhatten data by selecting data with "STATEFP"==36, and "COUNTYFP"==61.The "STATEFP"==36 indicates the New York state, the "COUNTYFP"==61 is Manhatten area.
 ```{r}
-#Select data for manhatten
+
 NY_data <- new_sld2021[new_sld2021$STATEFP == 36, ]
-
-# Display the filtered DataFrame
-
 
 man_data <- NY_data[NY_data$COUNTYFP == 61, ]
 
 ```
-### Density check
-```{r,fig.height=35, fig.width=20}
-library(ggplot2)
-library(gridExtra)
 
-# Define the columns to plot
-columns_to_plot <- c(
-  "P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
-  "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
-  "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
-  "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
-  "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
-  "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI"
-)
-
-# Create a list to hold the ggplot objects
-plots <- list()
-
-# Generate density plots for each column
-for (column in columns_to_plot) {
-  p <- ggplot(man_data, aes_string(x = column)) +
-    geom_density(fill = "blue", alpha = 0.4) +
-    labs(title = paste("Density plot of", column, "preprocessed"),
-         x = column, y = "Density") +
-    theme_minimal()
-  plots[[column]] <- p
-}
-
-# Arrange the plots in a grid (7 rows, 5 columns)
-grid_layout <- do.call(grid.arrange, c(plots, nrow = 7, ncol = 5))
-
-
-```
 
 ## Missing value analysis
 ```{r}
-# Install and load DataExplorer
-#install.packages("DataExplorer")
-library(DataExplorer)
 
-# Visualize missing data
-plot_missing(man_data)
+
+selected_columns <- c("P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
+                      "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
+                      "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
+                      "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
+                      "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
+                      "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI")
+man_miss<- man_data[, selected_columns]
+missing_plot <- plot_missing(man_miss,
+  group = list(Good = 0.05, OK = 0.4, Bad = 0.8, Remove = 1),
+  group_color = list(Good = "#1B9E77", OK = "#E6AB02", Bad = "#D95F02", Remove =
+    "#E41A1C"),
+  missing_only = FALSE, title = "Distribution of Missing Values for Each Variable")
 
 ```
-There is no missing value because all features are with 0 missing rows.
+There are no missing values in the dataset, as all features have 0 missing rows. In the plot_missing() function, when no missing values are present, the graph defaults to an x-axis scale ranging from -0.05 to 0.05. A similar case is demonstrated in the official reference:  https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html
 
 ```{r}
-library(VIM) 
+#install.packages("naniar")
 
-#no missing value
-#sum(is.na(man_data))
-#colSums(is.na(man_data))
+vis_miss(man_miss)
+
+```
+We also use heatmap for missing value by packages("naniar"), from the observations, 100% present of data are exsited. 0% percent value is missing.
+
+```{r}
+
+
 
 aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = TRUE, 
      labels = names(man_data), cex.axis = 0.7, gap = 3, 
@@ -155,23 +140,3 @@ aggr(man_data, col = c('navyblue', 'red'), numbers = TRUE, sortVars = TRUE,
 ```
 There is no missing data because proportion of missings is 0. If the combination count is 1 in the output of the aggr() function, it means there is only one distinct pattern of missingness across all the variables in the dataset. In other words:Every row with missing values has missingness in the exact same set of variables.No other unique missing value patterns exist in the dataset.
 
-### Data rescale 
-```{r}
-#rescale the data
-# Load required library
-library(scales)
-
-# Define the columns to scale
-columns_to_scale <- c("P_WrkAge", "Pct_AO1", "Pct_AO2p", "R_HiWageWk", 
-                      "E_HiWageWk", "D1A", "D1B", "D1C", "D1C8_HLTH", "D1D", 
-                      "D2A_JPHH", "D2A_EPHHM", "D2C_TRIPEQ", "D2R_JOBPOP", 
-                      "D2C_WREMLX", "D3A", "D3AAO", "D3AMM", "D3APO", "D3B", 
-                      "D3BAO", "D3BMM4", "D3BPO4", "D4A", "D4C", "D4D", 
-                      "D5AR", "D5AE", "D5BR", "D5BE", "D5CR", "D5CRI")
-
-# Apply Min-Max scaling to the selected columns
-man_data[columns_to_scale] <- lapply(man_data[columns_to_scale], rescale)
-
-# Print the scaled data
-
-```
