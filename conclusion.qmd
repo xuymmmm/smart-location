@@ -1,1 +1,22 @@
 # Conclusion
+
+## Summary
+Our analysis shows that Manhattan's most centrally located areas are concentrated in Midtown, which is consistent with the district's role as a center for business, transportation, and cultural attractions. These areas are examples of urban centrality because of their extensive roadway system and close access to important transportation options. In addition to being centers of activity, they also show how accessibility and urban design can interact powerfully.
+
+A major discovery of this project is that jobs within 45 minutes auto travel time (D5AR) have a significant impact on regional centrality, outweighing other factors like transit access, urban design, and demographics. The relationship between regional centrality and the amount of jobs within 45 minutes highlights how opportunities impact a city's functional center.
+
+## Lessons Learned
+This study supports the idea that urban centrality is complex and influenced by a range of factors, including accessibility, physical infrastructure, and spatial design. The primary motivator is destination accessibility, but the interaction of other factors shows an complicate structure of interactions that needs further study. Moreover, diverse patterns of centrality show variations in the density of street intersections, suggesting that regional factors may have an impact on how accessibility converts into centrality.
+
+## Limitations
+This project does not include variables such as socioeconomic dynamics and cultural resources into urban centralization analysis. Furthermore, even though the data provides valuable insights into trends found in Manhattan, additional research could expand the findings' relevance to other urban areas.
+
+## Future Directions
+Future studies can do the following to expand our understanding:
+
+1. For scatter plot for D5AR(Jobs within 45 minutes) and D5CRI(Regional Centrality Index) facet on D3B (Street Intersection density level), there seems to have different pattern showing on low Street Intersection density level. 
+
+Therefore, we will look other variables that may cause this pattern difference.
+
+2. This study highlights the importance destination accessibility is in establishing the functional center of urban areas. Therefore, we can try to find general vs Manhattan-specific trends, expand the focus to investigate how similar findings hold true in other cities and urban systems.
+We can further understand the complex processes of urban centralization and help create more sustainable, and efficient city planning by broadening the scope of our research and improving our techniques.

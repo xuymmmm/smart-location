@@ -1,103 +1,208 @@
 // add your JavaScript/D3 to this file
 // myscript.js
 
+// add your JavaScript/D3 to this file
 // myscript.js
 
-const width = 600;
-const height = 800;
+// scripts.js
 
+// Load the data with a row converter to parse numeric values
+const rowConverter = function (d) {
+  return {
+    D5AR: +d.D5AR,
+    D5CRI: +d.D5CRI,
+    D3B_Cat: d.D3B_Cat.trim().toLowerCase(), // Normalize for consistent filtering
+    D1C_Cat: d.D1C_Cat
+  };
+};
+
+// Set up margins, width, and height for the SVG container
+const margin = { top: 20, right: 200, bottom: 60, left: 60 }, // Increased right margin for legend
+      width = 800 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
+
+// Create an SVG element to hold the plot
 const svg = d3.select("div#plot")
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height);
+              .append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+              .attr("transform", `translate(${margin.left},${margin.top})`);
 
-const tooltip = d3.select("#tooltip");
+// Set up scales for the x and y axes
+const xScale = d3.scaleLinear().range([0, width]);
+const yScale = d3.scaleLinear().range([height, 0]);
 
-const projection = d3.geoMercator()
-  .center([-73.97, 40.75])
-  .scale(55000)
-  .translate([width/2, height/2]);
+// Define a color scale for D1C_Cat categories
+const colorScale = d3.scaleOrdinal()
+                     .domain(["Low", "Medium", "High", "Very High"])
+                     .range(["red", "green", "blue", "purple"]);
 
-const path = d3.geoPath().projection(projection);
-let colorScale = d3.scaleSequential(d3.interpolateBlues);
+// Set up the tooltip
+const tooltip = d3.select("body").append("div")
+                  .attr("class", "tooltip")
+                  .style("position", "absolute")
+                  .style("text-align", "left")
+                  .style("width", "auto")
+                  .style("height", "auto")
+                  .style("padding", "8px")
+                  .style("font", "12px sans-serif")
+                  .style("background", "lightsteelblue")
+                  .style("border", "0px")
+                  .style("border-radius", "8px")
+                  .style("pointer-events", "none")
+                  .style("opacity", 0);
 
-d3.json("smart_location/data/manhattan.geojson").then(data => {
-  const varName = "D5CRI";
-  const values = data.features.map(d => +d.properties[varName]).filter(v => !isNaN(v));
-  const minVal = d3.min(values);
-  const maxVal = d3.max(values);
-  colorScale.domain([minVal, maxVal]);
+// Load the CSV data
+d3.csv("https://raw.githubusercontent.com/xuymmmm/smart-location/refs/heads/main/data/data_new.csv", rowConverter).then(function(data) {
 
-  svg.selectAll("path")
-    .data(data.features)
-    .enter().append("path")
-    .attr("d", path)
-    .attr("fill", d => {
-      const val = d.properties[varName];
-      return isNaN(val) ? "#ccc" : colorScale(val);
-    })
-    .attr("stroke", "grey")
-    .attr("stroke-width", 0.1)
-    .attr("fill-opacity", 0.8)
-    .on("mouseover", (event, d) => {
-      const val = d.properties[varName];
-      tooltip.style("opacity", 1)
-        .html(`<strong>Regional Centrality Index:</strong> ${val !== undefined ? val.toFixed(2) : "N/A"}`)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 20) + "px");
-    })
-    .on("mousemove", (event) => {
-      tooltip.style("left", (event.pageX + 10) + "px")
-             .style("top", (event.pageY - 20) + "px");
-    })
-    .on("mouseout", () => {
-      tooltip.style("opacity", 0);
-    });
+  // Set domain for the axes based on data with padding
+  xScale.domain([d3.min(data, d => d.D5AR) * 0.95, d3.max(data, d => d.D5AR) * 1.05]);
+  yScale.domain([d3.min(data, d => d.D5CRI) * 0.95, d3.max(data, d => d.D5CRI) * 1.05]);
 
-  // Legend
-  const legendWidth = 200;
-  const legendHeight = 10;
+  // Add X axis
+  svg.append("g")
+     .attr("transform", `translate(0,${height})`)
+     .call(d3.axisBottom(xScale));
+
+  // Add Y axis
+  svg.append("g")
+     .call(d3.axisLeft(yScale));
+
+  // Add axes labels
+  svg.append("text") 
+     .attr("x", width / 2) 
+     .attr("y", height + margin.bottom - 15) 
+     .attr("text-anchor", "middle") 
+     .style("font-size", "14px") 
+     .text("Jobs within 45 minutes"); 
+      
+  svg.append("text") 
+     .attr("transform", "rotate(-90)") 
+     .attr("x", -height / 2) 
+     .attr("y", -margin.left + 20) 
+     .attr("text-anchor", "middle") 
+     .style("font-size", "14px") 
+     .text("Regional Centrality Index"); 
+
+  // Create a group for the scatterplot points
+  const scatter = svg.append("g")
+                     .attr("class", "scatterplot");
+
+  // Function to render scatterplot points
+  function renderScatter(filteredData) {
+    // Bind the data to circles
+    const circles = scatter.selectAll(".dot")
+                           .data(filteredData, d => `${d.D5AR}-${d.D5CRI}-${d.D1C_Cat}-${d.D3B_Cat}`);
+
+    // Handle exiting circles
+    circles.exit()
+           .transition()
+           .duration(500)
+           .attr("r", 0)
+           .remove();
+
+    // Handle updating existing circles
+    circles.transition()
+           .duration(500)
+           .attr("cx", d => xScale(d.D5AR))
+           .attr("cy", d => yScale(d.D5CRI))
+           .style("fill", d => colorScale(d.D1C_Cat) || "purple");
+
+    // Handle entering circles
+    circles.enter()
+           .append("circle")
+           .attr("class", "dot")
+           .attr("cx", d => xScale(d.D5AR))
+           .attr("cy", d => yScale(d.D5CRI))
+           .attr("r", 0)
+           .style("fill", d => colorScale(d.D1C_Cat) || "purple")
+           .style("opacity", 0.7)
+           .on("mouseover", function(event, d) {
+              tooltip.transition().duration(200).style("opacity", .9);
+              tooltip.html("Regional Centrality Index: " + d.D5CRI + "<br>Jobs within 45 minutes: " + d.D5AR)
+                     .style("left", (event.pageX + 5) + "px") 
+                     .style("top", (event.pageY - 28) + "px"); 
+           }) 
+           .on("mouseout", function() { 
+              tooltip.transition().duration(500).style("opacity", 0); 
+           })
+           .transition()
+           .duration(500)
+           .attr("r", 5);
+  }
+
+  // Initial rendering with all data
+  renderScatter(data);
+
+  // Add Legend for D1C_Cat
+  const legendData = [
+    { label: "Low", color: "red" },
+    { label: "Medium", color: "green" },
+    { label: "High", color: "blue" },
+    { label: "Very High", color: "purple" }
+  ];
+
   const legend = svg.append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${width - legendWidth - 20}, ${height - 40})`);
+                    .attr("class", "legend")
+                    .attr("transform", `translate(${width + 20}, 0)`); // Position legend to the right
 
-  const defs = svg.append("defs");
-  const gradient = defs.append("linearGradient")
-    .attr("id", "legendGradient")
-    .attr("x1", "0%").attr("y1", "0%")
-    .attr("x2", "100%").attr("y2", "0%");
+ legend.append("text")
+      .attr("x", 0)
+      .attr("y", -10) // Position above the first legend item
+      .attr("text-anchor", "start")
+      .style("font-size", "12px")
+      .text("D1C: Gross Employment Density Level");
 
-  const steps = 10;
-  const stepValues = d3.range(steps).map(i => minVal + i*(maxVal - minVal)/(steps-1));
-  stepValues.forEach((sv, i) => {
-    gradient.append("stop")
-      .attr("offset", (i/(steps-1))*100 + "%")
-      .attr("stop-color", colorScale(sv));
+// Add colored rectangles to the legend
+legend.selectAll(".legend-rect")
+      .data(legendData)
+      .enter()
+      .append("rect")
+      .attr("class", "legend-rect")
+      .attr("x", 0)
+      .attr("y", (d, i) => i * 25) // Adjusted positioning
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", d => d.color)
+      .style("stroke", "black"); // Optional: Add a stroke for debugging visibility
+
+// Add labels to the legend
+legend.selectAll(".legend-text")
+      .data(legendData)
+      .enter()
+      .append("text")
+      .attr("class", "legend-text")
+      .attr("x", 25) // Position to the right of rectangles
+      .attr("y", (d, i) => i * 25 + 9) // Align with the center of the rectangles
+      .attr("dy", ".35em") // Vertical alignment for text
+      .text(d => d.label)
+      .style("font-size", "8px")
+      .attr("alignment-baseline", "middle");
+
+  // Function to update the scatterplot based on selected D3B_Cat
+  function updateScatter(selectedCategory) {
+    let filteredData;
+    if (selectedCategory === "all") {
+      filteredData = data;
+    } else {
+      filteredData = data.filter(d => d.D3B_Cat === selectedCategory);
+    }
+
+    renderScatter(filteredData);
+  }
+
+  // Add event listener to the dropdown menu
+  d3.select("#filter").on("change", function() {
+    const selectedOption = d3.select(this).property("value").toLowerCase();
+    updateScatter(selectedOption);
   });
+// Append a paragraph for user instructions
+  d3.select("div#plot")
+  .append("p")
+  .attr("class", "user-instruction")
+  .style("font-size", "14px")
+  .style("margin-top", "20px")
+  .text("Instructions: Use the dropdown menu above to filter the data by category. Hover over the scatterplot points to see details about the 'Regional Centrality Index' and 'Jobs within 45 minutes'. The legend on the right indicates the employment density levels, represented by different colors.");
 
-  legend.append("rect")
-    .attr("width", legendWidth)
-    .attr("height", legendHeight)
-    .style("fill", "url(#legendGradient)");
-
-  legend.append("text")
-    .attr("x", 0)
-    .attr("y", -2)
-    .style("text-anchor", "start")
-    .style("font-size", "12px")
-    .text(minVal.toFixed(2));
-
-  legend.append("text")
-    .attr("x", legendWidth)
-    .attr("y", -2)
-    .style("text-anchor", "end")
-    .style("font-size", "12px")
-    .text(maxVal.toFixed(2));
-
-  legend.append("text")
-    .attr("x", legendWidth/2)
-    .attr("y", -10)
-    .attr("text-anchor", "middle")
-    .style("font-size", "12px")
-    .text("Regional Centrality Index");
 });
