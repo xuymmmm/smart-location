@@ -204,7 +204,7 @@ ggplot(data_long, aes(x = Value_scaled, y = Variable)) +
   theme(
     legend.position = "none",  
     axis.text.y = element_text(size = 10),  
-    plot.title = element_text(size = 14, face = "bold")  
+    plot.title = element_text(size = 12, face = "bold")  
   )
 
 
@@ -410,7 +410,7 @@ Areas designed for pedestrians tend to have slightly fewer multi-modal facilitie
 
 ### (2). Scatter plot matrix
 
-```{r,fig.width=9,fig.height=9}
+```{r,fig.width=10,fig.height=9}
 
 
 
