@@ -6,7 +6,7 @@ output: html_document
 date: "2024-12-08"
 ---
 
-```{r}
+```{r, message=FALSE}
 # Load necessary libraries
 
 library(ggplot2)
@@ -25,7 +25,7 @@ library(shiny)
 ```{r}
 # Load the dataset
 data <- read.csv("SLD_new.csv")
-data <- data %>%
+data <- data |>
   mutate(D4A = ifelse(D4A < 0, 0, D4A))
 summary(data)
 ```
@@ -44,7 +44,7 @@ num_variables <- c(
 selected_data <- data[num_variables]
 
 
-data_long <- selected_data %>%
+data_long <- selected_data |>
   pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value")
 
 # Histograms with free x and y scales
@@ -80,7 +80,7 @@ Therefore, we choose to convert this two variables to categorical variables
 
 ```{r}
 # Transform D1C and D3B to categorical data
-data_categorical <- data %>%
+data_categorical <- data |>
   mutate(
     D1C_Cat = cut(D1C, breaks = c(-Inf, 40, 80, 120, Inf), labels = c("Low", "Medium", "High", "Very High")),
     D3B_Cat = cut(D3B, breaks = c(-Inf, 40, 80, 130, Inf), labels = c("Low", "Medium", "High", "Very High"))
@@ -109,7 +109,7 @@ num_variables <- c(
 selected_data <- data[num_variables]
 
 
-data_long <- selected_data %>%
+data_long <- selected_data |>
   pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value")
 
 # histograms
@@ -146,44 +146,42 @@ ggplot(data_long, aes(x = Value)) +
 
 The histogram plot provides a visual overview of the distributions for several numerical variables. 
 
-D1B (Gross population density) and D3A (Total road network density) show right-skewed distributions, with most areas concentrated at lower values and a few with much higher densities. D3AMM (Multi-modal network density) and D3APO (Pedestrian-oriented network density) are also right-skewed, suggesting limited infrastructure in many regions.
+D1B (Gross population density) and D3A (Total road network density) show right-skewed distributions, with most areas concentrated at lower values and a few with much higher densities. D3AMM (Multi-modal network density) and D3APO (Pedestrian-oriented network density) are also right-skewed, suggesting limited infrastructure in many regions in Mahattan.
 
 D4A (Distance to nearest transit stop) exhibits a sharp peak at lower values, indicating many areas are close to transit stops, while some are much farther.
 
 D5AR (Jobs within 45 minutes auto travel time) and D5CRI (Regional Centrality Index) show near-normal distributions, suggesting these metrics are relatively evenly distributed across regions. 
 
-P_WrkAge (Percent of working-age population) displays a bell-shaped distribution, indicating consistency in the working-age population. Pct_AO1 (Percent of one-car households) shows a right-skewed pattern, highlighting a concentration of areas with fewer one-car households. 
+P_WrkAge (Percent of working-age population) displays a normal distribution distribution with many zeros, indicating consistency in the working-age population. Pct_AO1 (Percent of one-car households) shows a right-skewed pattern, highlighting a concentration of areas with fewer one-car households. 
 
-Finally, R_HiWageWk (Count of high-wage workers) is highly skewed, with most areas having fewer high-wage workers and only a small fraction with significantly higher counts. 
+Finally, R_HiWageWk (Count of high-wage workers) is highly right skewed, with most areas having fewer high-wage workers and only a small fraction with significantly higher counts. 
 
 
 ### (2). ridgeline plot for numerical variables
 ```{r}
 # ridgeline plot 
-
-
-data_long <- data_long %>%
-  group_by(Variable) %>%
+data_long <- data_long |>
+  group_by(Variable) |>
   mutate(Value_scaled = (Value - min(Value, na.rm = TRUE)) / 
-                         (max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE))) %>%
+                         (max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE))) |>
   ungroup()
 
 
-medians <- data_long %>%
-  group_by(Variable) %>%
-  summarize(median_value = median(Value, na.rm = TRUE)) %>%
+medians <- data_long |>
+  group_by(Variable) |>
+  summarize(median_value = median(Value, na.rm = TRUE)) |>
   arrange(desc(median_value))
 
 data_long$Variable <- factor(data_long$Variable, levels = rev(medians$Variable))
 
-data_long <- data_long %>%
+data_long <- data_long |>
   filter(Value_scaled >= 0)
 
 
 
-medians <- data_long %>%
-  group_by(Variable) %>%
-  summarize(median_value = median(Value_scaled, na.rm = TRUE)) %>%
+medians <- data_long |>
+  group_by(Variable) |>
+  summarize(median_value = median(Value_scaled, na.rm = TRUE)) |>
   arrange(desc(median_value))
 
 
@@ -212,7 +210,7 @@ ggplot(data_long, aes(x = Value_scaled, y = Variable)) +
 ```
 
 
-The ridgeline plot shows the distribution of scaled values (0–1) for various numerical variables, ordered by their median values. 
+The ridgeline plot shows the distribution of scaled values (0–1) for various numerical variables, ordered by their highest median values to lowest median values . 
 
 P_WrkAge (Percent of working-age population) has the highest median and displays a centered distribution, indicating most areas have a significant working-age population. 
 
@@ -290,25 +288,25 @@ ggplot(data_categorical, aes(x = D1C_Cat, y = D3B_Cat)) +
 
 This jitter plot compares D1C (Gross employment density levels) with D3B (Street intersection density levels) by categorizing each variable into four levels: Low, Medium, High, and Very High. 
 
-The plot reveals that there is a clear clustering within each combination of categories, with Low D1C and Low D3B showing a tight grouping of points, indicating many areas fall into this category. Similarly, Very High D1C and Very High D3B also display a dense cluster, suggesting that regions with high employment density tend to align with higher street intersection density. 
+The plot shows that there is a clear clustering within each combination of categories, with Low D1C and Low D3B showing a tight grouping of points, showing that many areas fall into this category. Similarly, Very High D1C and Very High D3B also have a dense cluster, suggesting that regions with high employment density tend to align with higher street intersection density. 
 
-However, the spread of points increases for Medium and High categories, indicating greater variability or inconsistency in these regions. This implies a potential correlation between employment density and street intersection density, especially at extreme levels, but variability exists in intermediate categories. 
+However, the spread of points increases for Medium and High categories, indicating greater variability or inconsistency in these regions. This implies a potential correlation between employment density and street intersection density, but variability exists in intermediate categories. 
 
 
 ### (5). Parallel coordinate plot for all numberical variables (color by categorical variables)
 
-We randomly select 200 sample and do parallel coordinate plot because original dataset is too large
+We randomly select 200 sample and do parallel coordinate plot because original dataset is too large and it's hard to see the pattern for parallel coordinate plot.
 
 ```{r}
 set.seed(123)
 
 
-sampled_data <- data_categorical %>%
-  sample_n(200) %>%
+sampled_data <- data_categorical |>
+  sample_n(200) |>
   select(D3B_Cat, P_WrkAge, Pct_AO1, R_HiWageWk, D1B, D3A, D3AMM, D3APO, D4A, D5AR)
 
 
-numeric_vars <- sampled_data %>%
+numeric_vars <- sampled_data |>
   select(-D3B_Cat)  
 
 data_normalized <- as.data.frame(scale(numeric_vars))
@@ -317,8 +315,8 @@ data_normalized <- as.data.frame(scale(numeric_vars))
 data_normalized <- cbind(sampled_data["D3B_Cat"], data_normalized)
 
 
-data_long <- data_normalized %>%
-  mutate(ID = 1:nrow(data_normalized)) %>%
+data_long <- data_normalized |>
+  mutate(ID = 1:nrow(data_normalized)) |>
   pivot_longer(
     cols = -c(ID, D3B_Cat),
     names_to = "Variable",
@@ -350,17 +348,17 @@ ggplot(data_long, aes(x = Variable, y = Value, group = ID, color = D3B_Cat)) +
 
 This parallel coordinate plot represents the relationships between multiple normalized numerical variables for 200 randomly selected rows. Each line corresponds to one observation (row), and the colors represent the levels of the categorical variable D3B_Cat (Low, Medium, High, Very High).
 
-Lines from Very High street intersection (purple line) generally peak at these variables, suggesting that areas with very high street intersection density level (D3B) values have higher values for transit accessibility and job accessibility.
+Lines from Very High street intersection (purple line) generally peak at Pedestrian-oriented network density(D3APO) and Total road network density(D3A), suggesting that areas with very high street intersection density level (D3B) values have higher values for road network density and Pedestrian-oriented network density.
 
-Red lines generally stay lower, indicating that areas in the "Low" street intersection density level (D3B) are closer to transit stops and have fewer jobs accessible by car.
+Red lines generally stay lower, indicating that areas in the "Low" street intersection density level (D3B) are closer to transit stops(D4A) and have fewer jobs accessible by car(D5AR).
 
 
-# The goal for our project is to see how does each factors affect the D5CRI (Regional Centrality Index) in Manhattan City
+### The goal for our project is to see how does each factors affect the D5CRI (Regional Centrality Index) in Manhattan City
 
 To reach our goal, we will first draw correlation plot to see how does each numerical data related to D5CRI (Regional Centrality Index) 
 
-## 2. Correlation plot with numerical variables
-### (1).heat map
+### 2. Correlation plot with numerical variables
+#### (1).heat map
 
 ```{r}
 
@@ -394,21 +392,25 @@ ggplot(cor_melt, aes(x = Var1, y = Var2, fill = value)) +
 ```
 
 1. Strong Positive Relationships:
+
 Areas that are highly central (D5CRI) tend to have better access to jobs within a 45-minute drive (D5AR).
 
 
 2. Moderate Positive Relationships:
+
 Areas with more working-age residents tend to have more high-wage earners.
 
 Areas with denser road networks also tend to have better multi-modal transportation options like buses or trains.
 
 3. Weak or Minimal Relationships:
-Walkable infrastructure (D3APO) and Places closer to transit stops (D4A) shows little connection to most other factors, indicating it operates independently.
+
+Walkable infrastructure (D3APO) and Areas that are highly central (D5CRI) shows little connection to most other factors, indicating it operates independently.
 
 4. Negative Relationships:
+
 Areas designed for pedestrians tend to have slightly fewer multi-modal facilities, showing a trade-off in urban planning priorities.
 
-### (2). Scatter plot matrix
+#### (2). Scatter plot matrix
 
 ```{r,fig.width=10,fig.height=9}
 
@@ -417,7 +419,7 @@ Areas designed for pedestrians tend to have slightly fewer multi-modal facilitie
 selected_data <- data[num_variables]
 
 
-selected_data <- selected_data %>%
+selected_data <- selected_data |>
   mutate(across(everything(), as.numeric))
 
 
@@ -431,12 +433,11 @@ ggpairs(
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-From the scatter plot we can see that transit stops, and robust transport networks are the strongest correlation with regional centrality, while factors like pedestrian infrastructure or car ownership have smaller correlation with regional centrality.
+From the scatter plot we can see that transit stops, and robust transport networks are the strongest correlation with regional centrality, while factors like pedestrian infrastructure or car ownership have smaller correlation with regional centrality in Manhattan.
 
-### (3). Scatter plot for D5AR(Jobs within 45 minutes) and D5CRI(Regional Centrality Index) facet on D3B (Street Intersection density level)
+#### (3). Scatter plot for D5AR(Jobs within 45 minutes) and D5CRI(Regional Centrality Index) facet on D3B (Street Intersection density level)
+
 ```{r,fig.height=8, fig.width=10}
-
-
 
 ggplot(data_categorical, aes(x = D5AR, y = D5CRI, color = D1C_Cat)) +
   geom_point(alpha = 0.7) +
@@ -460,9 +461,13 @@ This scatter plot shows a strong positive correlation between jobs within 45 min
 
 The Employment density does not seem to significantly influence the observed relationship in this data.
 
-## 3. Map plot
+### After seeing the variable Jobs within 45 minutes (D5AR) that have highest correlation with regional centrality (D5CRI), we decided to draw map plot to see how did these two variables acted in spatial map plot.
 
-```{r}
+### 3. Map plot
+
+#### (1) Map plot for Regional Centrality Index (D5CRI)
+
+```{r, message=FALSE}
 
 str(data_categorical)
 data_trans <- data_categorical
@@ -478,6 +483,13 @@ data_sf <- st_as_sf(data_trans, sf_column_name = "geometry")
 #st_geometry_type(data_sf)
 
 ```
+
+
+User Interactions:
+Hover your cursor over regions to see the Regional Centrality Index values in a tooltip.
+Zoom in and out or pan around the map to explore different areas more closely.
+Use the toolbar in the viewer to reset the view or take screenshots as needed.
+
 
 ```{r}
 
@@ -500,14 +512,11 @@ interactive_plot <- ggplotly(spatial_plot, tooltip = "text")
 interactive_plot
 ```
 
-Result:
+
 In Manhattan, the most centrally located regions generally appear around midtown—near and around the core business districts, transportation hubs, and areas with a dense street network. These midtown neighborhoods, often home to major landmarks, offices, and transit stations, stand out as the most "central" parts of Manhattan according to the map.
 
-User Interactions:
-Hover your cursor over regions to see the Regional Centrality Index values in a tooltip.
-Zoom in and out or pan around the map to explore different areas more closely.
-Use the toolbar in the viewer to reset the view or take screenshots as needed.
 
+#### (2) Map plot for Jobs within 45 minutes (D5AR)
 
 ```{r}
 
