@@ -1,39 +1,35 @@
 # Interactive graph
 
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .tooltip {
+      position: absolute;
+      text-align: center;
+      padding: 5px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+    }
+  </style>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  * { font-family: sans-serif; }
-  body { margin: 20px; }
-  h1 { text-align: center; }
-  #plot { position: relative; }
-  .tooltip {
-    position: absolute;
-    background: #fff;
-    padding: 5px 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    pointer-events: none;
-    font-size: 14px;
-    color: #333;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-</style>
-</head>
-<body>
+<h1>Interactive Scatter Plot: Jobs within 45 minutes VS Regional Centrality Index</h1>
 
-<h1>Map plot for Regional Centrality Index in Manhattan</h1>
+<label for="filter">Choose a level of D3B (street intersection density):</label>
+<select id="filter">
+  <option value="all">All</option>
+  <option value="low">Low</option>
+  <option value="medium">Medium</option>
+  <option value="high">High</option>
+  <option value="very high">Very High</option>
+</select>
+
 
 <div id="plot"></div>
-<div class="tooltip" id="tooltip"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="scripts/myscript.js"></script>
+<script src="scripts/myscript.js"></script> <!-- Link to the JavaScript file -->
 
-</body>
-</html>
