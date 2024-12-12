@@ -16,9 +16,13 @@ By answering these questions, we aim to shed light on the intricate factors shap
 The dataset used in this project is the Smart Location Database (SLD) provided by the U.S. Environmental Protection Agency (EPA). The SLD gathers over 90 indicators related to the built environment and location efficiency, including:
 
 transit access
+
 urban density
+
 urban design
+
 urban demographics
+
 urban destination
 
 ### Key Features of the Dataset:
