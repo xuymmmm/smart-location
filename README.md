@@ -23,19 +23,26 @@ urban destination
 
 ### Key Features of the Dataset:
 Format: Geometry data based on Census Block Groups (CBG)
+
 Scope: Data covers the entire U.S., but we focus on Manhattan, NYC.
+
 Size: Over 90 variables, with 32 selected for this analysis across five perspectives: demographics, density, design, transit access, and destination accessibility.
 
 ## Objectives
 Data Exploration and Usability:
 Focus on Manhattan data and examine the density distribution of selected features to evaluate their usability.
+
 Analysis and Visualization:
 Identify trends in the selected features and their relationship to urban centrality.
+
 Recommendations:
 Provide actionable insights for urban planners and policymakers based on the findings.
 
 ## Methodology
 Data Selection: Extract Manhattan-specific data from the SLD dataset using geometry-based filtering for Census Block Groups.
+
 Feature Engineering: Focus on the 32 selected features to align with the research questions.
+
 Data Visualization: Plot density distributions and analyze feature usability for centrality and location efficiency metrics.
+
 Analysis: Investigate relationships between urban factors (e.g., employment, transit, demographics) and centrality indices.
