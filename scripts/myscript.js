@@ -202,7 +202,61 @@ legend.selectAll(".legend-text")
   .append("p")
   .attr("class", "user-instruction")
   .style("font-size", "14px")
+  .style("font-weight", "bold")
   .style("margin-top", "20px")
   .text("Instructions: Use the dropdown menu above to filter the data by category. Hover over the scatterplot points to see details about the 'Regional Centrality Index' and 'Jobs within 45 minutes'. The legend on the right indicates the employment density levels, represented by different colors.");
+  
+  // Append findings header
+   d3.select("div#plot")
+  .append("p")
+  .attr("class", "findings-header")
+  .style("font-size", "16px")
+  .style("font-weight", "bold")
+  .style("margin-top", "20px")
+  .text("Findings:");
+
+// Append each finding point
+   const findings = [
+  "1. Linear Relationship Strength: As the street intersection density decreases, the positive linear relationship between Jobs within 45 minutes and Regional Centrality Index weakens. This indicates that urban design factors (like street connectivity) significantly enhance regional centrality when employment opportunities are geographically accessible.",
+  "2. Spread and Clustering: Higher street intersection density leads to more compact data points, reflecting better regional integration and accessibility. Conversely, lower density increases the spread, suggesting less connectivity and centrality in areas with sparse street networks.",
+  "3. Employment Density Distribution: At higher street intersection densities, employment density categories (Low, Medium, High, Very High) are more mixed, reflecting better integration across urban regions. In contrast, at lower densities, specific employment density categories dominate distinct areas of the graph, indicating less regional integration."
+];
+
+   findings.forEach(finding => {
+   d3.select("div#plot")
+    .append("p")
+    .attr("class", "finding-point")
+    .style("font-size", "14px")
+    .style("margin-left", "20px")
+    .style("margin-top", "10px")
+    .text(finding);
+});
+
+// Append possible reasons header
+   d3.select("div#plot")
+  .append("p")
+  .attr("class", "reasons-header")
+  .style("font-size", "16px")
+  .style("font-weight", "bold")
+  .style("margin-top", "20px")
+  .text("Possible Reasons for Differences:");
+
+// Append each possible reason point
+   const reasons = [
+  "1. Urban Connectivity: Higher street intersection densities correspond to urban areas with more integrated street networks, facilitating greater accessibility to jobs within shorter travel times. This contributes to higher centrality.",
+  "2. Regional Land Use Patterns: High and very high street intersection densities likely represent urban cores, where employment opportunities are denser and well-distributed. Medium and low densities correspond to less urbanization areas with fewer jobs and less centrality.",
+  "3. Transportation and Infrastructure: Regions with low street intersection density may lack robust transportation infrastructure, increasing travel times and reducing access to jobs, thereby lowering regional centrality.",
+  "4. Economic and Spatial Planning: Urban areas with high connectivity tend to prioritize mixed-use developments, while lower connectivity areas may focus more on single-use zoning, contributing to the observed variations in employment density distribution and centrality."
+];
+
+    reasons.forEach(reason => {
+    d3.select("div#plot")
+    .append("p")
+    .attr("class", "reason-point")
+    .style("font-size", "14px")
+    .style("margin-left", "20px")
+    .style("margin-top", "10px")
+    .text(reason);
+});
 
 });
